@@ -1,23 +1,20 @@
 package com.javaserver;
+
 import com.javaserver.routes.UserRoutes;
 
 import io.javalin.Javalin;
+import io.javalin.json.JavalinJackson;
 
 public class Main {
     public static void main(String[] args) {
-        Javalin app = Javalin.create(/*config*/);
+
+        // Configuring the JSON mapper
+        // https://javalin.io/documentation#configuring-the-json-mapper
+        Javalin app = Javalin.create(config -> {
+            config.jsonMapper(new JavalinJackson());
+        });
         UserRoutes.setupUserRoutes(app);
         app.start(7000);
-
-        
-
-        // app.get("/user", new UserController()::getUser);
-        // app.post("/user", new UserController()::createUser);
-        // app.get("/user/{id}", new UserController()::getUserById);
-        // app.put("/user/{id}", new UserController()::updateUserById);
-        // app.delete("/user/{id}", new UserController()::deleteUserById);
-        // app.get("/allusers", new UserController()::getAllUsers);
-
 
     }
 }
