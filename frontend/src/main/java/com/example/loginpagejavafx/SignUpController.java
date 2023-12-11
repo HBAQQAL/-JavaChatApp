@@ -1,9 +1,12 @@
 package com.example.loginpagejavafx;
 
 
+import com.example.loginpagejavafx.utils.FXRouter;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import java.io.IOException;
 
 /**
  * Created By: Naman Agarwal
@@ -36,5 +39,14 @@ public class SignUpController {
 
     public void signup(){
         System.out.println("the action is working");
+    }
+
+    @FXML
+    public void switchToLogin() {
+        try {
+            FXRouter.goTo("login");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
