@@ -36,7 +36,7 @@
                         <Text id="haveAccountText">
                             <String fx:value="Log In"></String>
                         </Text>
-                        <Button id="logInLink">
+                        <Button id="logInLink" onAction="#switchToLogin">
                             Log In
                         </Button>
                     </HBox>

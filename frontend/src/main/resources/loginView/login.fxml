@@ -31,7 +31,7 @@
                         <Text id="dontHaveAccount">
                             <String fx:value="Don't have an account?"></String>
                         </Text>
-                        <Button id="signInLink" onAction="#switchToSignUpView">
+                        <Button id="signInLink" onAction="#switchToSignUp">
                             Sign In
                         </Button>
                     </HBox>
