@@ -1,0 +1,54 @@
+#AnchorPane {
+    -fx-background-color: #f4f4f4; /* Background color */
+}
+
+Button{
+    -fx-cursor: hand;
+}
+
+TextField, PasswordField {
+    -fx-background-color: #ececec; /* Field background color */
+    -fx-border-color: #d8d8d8; /* Border color */
+    -fx-border-width: 1px; /* Border width */
+    -fx-padding: 8px; /* Padding */
+}
+
+#welcomingText{
+    -fx-background-color: #005d8e; /* Field background color */
+    -fx-padding: 8px; /* Padding */
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+#alreadyHavaAccount{
+    -fx-text-fill: #555;
+}
+
+#signupButton {
+    -fx-background-color: #0077b5; /* Button background color */
+    -fx-text-fill: white; /* Text color */
+    -fx-font-weight: bold; /* Font weight */
+    -fx-padding: 8px 16px; /* Padding */
+}
+
+Button:hover {
+    -fx-background-color: #005d8e; /* Hover color */
+}
+
+
+#dontHaveAccount {
+    -fx-font-size: 12px; /* Adjust the font size as needed */
+    -fx-text-fill: #555; /* Text color */
+    -fx-padding: 5px; /* Padding */
+}
+
+#logInLink {
+    -fx-font-size: 12px; /* Adjust the font size as needed */
+    -fx-text-fill: #0077b5; /* Sign in link color */
+    -fx-padding: 5px; /* Padding */
+    -fx-underline: true; /* Underline the sign-in link */
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-text-alignment: center;
+}

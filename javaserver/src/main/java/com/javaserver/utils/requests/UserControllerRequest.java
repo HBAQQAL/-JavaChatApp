@@ -1,4 +1,4 @@
-package com.javaserver.utils;
+package com.javaserver.utils.requests;
 
 public class UserControllerRequest {
     private String firstName;

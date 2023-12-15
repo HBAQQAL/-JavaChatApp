@@ -1,10 +1,11 @@
 package com.javaserver.controllers;
 
+import com.javaserver.utils.Sessions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.javaserver.model.User;
-import com.javaserver.utils.UserControllerRequest;
+import com.javaserver.utils.requests.UserControllerRequest;
 
 import io.javalin.http.Context;
 
@@ -21,7 +22,6 @@ public class UserController {
         logger.info("creating user");
 
         UserControllerRequest userControllerRequest;
-
         try {
             userControllerRequest = context.bodyAsClass(UserControllerRequest.class);
         } catch (Exception e) {
@@ -31,11 +31,9 @@ public class UserController {
             return;
         }
 
-        boolean isbodyValid = false;
-
         // validate body : if an attribute is null or empty, return 400
         try {
-            isbodyValid = userControllerRequest.isValid();
+            userControllerRequest.isValid();
         } catch (Exception e) {
             e.printStackTrace();
             logger.info(e.getMessage());
@@ -57,12 +55,12 @@ public class UserController {
         context.result("GET /user/:id");
     }
 
-    public static void updateUserById(Context context) {
+    public static void updateUser(Context context) {
         context.status(200);
         context.result("PUT /user/:id");
     }
 
-    public static void deleteUserById(Context context) {
+    public static void deleteUser(Context context) {
         context.status(200);
         context.result("DELETE /user/:id");
     }

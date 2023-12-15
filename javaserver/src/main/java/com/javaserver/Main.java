@@ -1,20 +1,26 @@
 package com.javaserver;
 
+
+import com.javaserver.routes.AuthRoutes;
 import com.javaserver.routes.UserRoutes;
 
+import com.javaserver.utils.Sessions;
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
 
 public class Main {
     public static void main(String[] args) {
-
-        // Configuring the JSON mapper
-        // https://javalin.io/documentation#configuring-the-json-mapper
         Javalin app = Javalin.create(config -> {
             config.jsonMapper(new JavalinJackson());
+            config.jetty.sessionHandler(() -> Sessions.fileSessionHandler());
+        });
+        app.error(404, ctx -> {
+            ctx.result("Not found");
         });
         UserRoutes.setupUserRoutes(app);
-        app.start(7000);
+        AuthRoutes.setupAuthRoutes(app);
 
+        app.start(7000);
     }
 }
+
