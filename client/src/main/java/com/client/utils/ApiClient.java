@@ -26,12 +26,18 @@ public class ApiClient {
 
             int responseCode = connection.getResponseCode();
             System.out.println("Response Code: " + responseCode);
+            try {
 
-            CoockieHandler.getInstance().setCoockieFromHeader(connection.getHeaderField("Set-Cookie"));
+                CoockieHandler.getInstance().setCoockieFromHeader(connection.getHeaderField("Set-Cookie"));
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
 
             try (InputStream inputStream = getInputStream(connection, responseCode)) {
                 return processResponse(inputStream, responseCode);
+
             }
+
         } catch (MalformedURLException e) {
             handleMalformedURLException(e);
         } catch (IOException e) {
