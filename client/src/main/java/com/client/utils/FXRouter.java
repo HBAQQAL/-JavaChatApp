@@ -229,36 +229,21 @@ public final class FXRouter {
         String scenePath = "/" + route.scenePath;
         String sceneStyleSheetPath = "/" + route.styleSheetPath;
 
-        URL resourceURL = App.class.getResource(scenePath);
-        if (resourceURL == null) {
-            System.out.println("resourceURL is null");
-            return;
-        }
-        File resourceFile = null;
-        try {
-            resourceFile = new File(resourceURL.toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            System.out.println("there was an exception ");
-        }
-
-        System.out.println(resourceFile.exists());
+        File fxmlFile = new File("src/main/resources" + scenePath);
+        File styleSheetFile = new File("src/main/resources" + sceneStyleSheetPath);
 
         Parent resource = null;
-
         try {
-            resource = FXMLLoader.load(resourceFile.toURI().toURL());
+            resource = FXMLLoader.load(fxmlFile.toURI().toURL());
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("there was an exception ");
         }
 
         window.setTitle(route.windowTitle);
-        // set window title from route settings or default setting
-        // set new route scene
+
         window.setScene(new Scene(resource, route.sceneWidth, route.sceneHeight));
-        window.getScene().getStylesheets().add(App.class.getResource(sceneStyleSheetPath).toExternalForm());
-        // show the window
+        window.getScene().getStylesheets().add(styleSheetFile.toURI().toURL().toExternalForm());
         window.show();
 
         // set scene animation
