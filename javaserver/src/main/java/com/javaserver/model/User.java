@@ -1,16 +1,18 @@
 package com.javaserver.model;
 
-import com.javaserver.utils.HibernateUtil;
-import jakarta.persistence.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
-import com.javaserver.utils.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import com.javaserver.utils.HibernateUtil;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -94,81 +96,115 @@ public class User {
         this.password = password;
     }
 
-    public String createUser() {
-        try {
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactoryInstance();
-            try (Session session = sessionFactory.openSession()) {
-                session.beginTransaction();
-                session.persist(this);
-                session.getTransaction().commit();
-            }
+    // public String createUser() {
+    // try {
+    // SessionFactory sessionFactory = HibernateUtil.getSessionFactoryInstance();
+    // try (Session session = sessionFactory.openSession()) {
+    // session.beginTransaction();
+    // session.persist(this);
+    // session.getTransaction().commit();
+    // }
 
-        } catch (ConstraintViolationException e) {
-            return "Username already exists";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "User created";
-    }
+    // } catch (ConstraintViolationException e) {
+    // return "Username already exists";
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // return "User created";
+    // }
 
-    public static boolean doesUserExist(String username) {
-        try {
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactoryInstance();
-            try (Session session = sessionFactory.openSession()) {
-                // Create a query to check if the user exists
-                Query<Long> query = session.createQuery(
-                        "SELECT COUNT(*) FROM User WHERE username = :username", Long.class);
-                query.setParameter("username", username);
+    // public String createUser() {
+    // try {
+    // if (isUsernameExists(this.getUsername())) {
+    // return "Username already exists";
+    // }
 
-                // Execute the query and get the result
-                Long count = query.uniqueResult();
+    // saveUser(this);
+    // return "User created";
+    // } catch (Exception e) {
+    // // Log the exception for debugging purposes
+    // e.printStackTrace();
+    // return "Failed to create user";
+    // }
+    // }
 
-                // If count > 0, the user exists; otherwise, they don't
-                return count > 0;
-            }
+    // private boolean isUsernameExists(String username) {
+    // try (Session session =
+    // HibernateUtil.getSessionFactoryInstance().openSession()) {
+    // return (Long) session.createQuery("SELECT COUNT(u) FROM User u WHERE
+    // u.username = :username")
+    // .setParameter("username", username)
+    // .uniqueResult() > 0;
+    // }
+    // }
 
-        } catch (Exception e) {
-            // Handle exceptions appropriately (e.g., log or throw)
-            e.printStackTrace();
-            return false;
-        }
-    }
+    // private void saveUser(User user) {
+    // try (Session session =
+    // HibernateUtil.getSessionFactoryInstance().openSession()) {
+    // Transaction transaction = session.beginTransaction();
+    // session.persist(user);
+    // transaction.commit();
+    // }
+    // }
 
-    public static boolean isPasswordCorrect(String username, String password) {
-        try {
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactoryInstance();
-            try (Session session = sessionFactory.openSession()) {
-                // Retrieve the user based on the username
-                Query<User> query = session.createQuery(
-                        "FROM User WHERE username = :username", User.class);
-                query.setParameter("username", username);
+    // public static boolean doesUserExist(String username) {
+    // try {
+    // SessionFactory sessionFactory = HibernateUtil.getSessionFactoryInstance();
+    // try (Session session = sessionFactory.openSession()) {
+    // // Create a query to check if the user exists
+    // Query<Long> query = session.createQuery(
+    // "SELECT COUNT(*) FROM User WHERE username = :username", Long.class);
+    // query.setParameter("username", username);
 
-                // Get the user entity
-                User user = query.uniqueResult();
+    // // Execute the query and get the result
+    // Long count = query.uniqueResult();
 
-                // Check if the user exists and the passwords match
-                return user != null && user.getPassword().equals(password);
-            }
+    // // If count > 0, the user exists; otherwise, they don't
+    // return count > 0;
+    // }
 
-        } catch (Exception e) {
-            // Handle exceptions appropriately (e.g., log or throw)
-            e.printStackTrace();
-            return false;
-        }
-    }
+    // } catch (Exception e) {
+    // // Handle exceptions appropriately (e.g., log or throw)
+    // e.printStackTrace();
+    // return false;
+    // }
+    // }
 
-    public String getUser() {
-        System.out.println("Getting user from the database");
-        return "GET /user";
-    }
+    // public static boolean isPasswordCorrect(String username, String password) {
+    // try {
+    // SessionFactory sessionFactory = HibernateUtil.getSessionFactoryInstance();
+    // try (Session session = sessionFactory.openSession()) {
+    // // Retrieve the user based on the username
+    // Query<User> query = session.createQuery(
+    // "FROM User WHERE username = :username", User.class);
+    // query.setParameter("username", username);
 
-    public String getUserById() {
-        System.out.println("Getting user by id from the database");
-        return "GET /user/:id";
-    }
+    // // Get the user entity
+    // User user = query.uniqueResult();
 
-    public String getAllUsers() {
-        System.out.println("Getting all users from the database");
-        return "GET /allusers";
-    }
+    // // Check if the user exists and the passwords match
+    // return user != null && user.getPassword().equals(password);
+    // }
+
+    // } catch (Exception e) {
+    // // Handle exceptions appropriately (e.g., log or throw)
+    // e.printStackTrace();
+    // return false;
+    // }
+    // }
+
+    // public String getUser() {
+    // System.out.println("Getting user from the database");
+    // return "GET /user";
+    // }
+
+    // public String getUserById() {
+    // System.out.println("Getting user by id from the database");
+    // return "GET /user/:id";
+    // }
+
+    // public String getAllUsers() {
+    // System.out.println("Getting all users from the database");
+    // return "GET /allusers";
+    // }
 }
