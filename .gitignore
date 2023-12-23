@@ -28,3 +28,5 @@ config.properties
 hibernate.cfg.xml
 hibernate.properties
 .idea/
+
+target
