@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.javaserver.model.User;
 import com.javaserver.utils.HibernateUtil;
+import com.javaserver.utils.ResponseUtils;
 import com.javaserver.utils.requests.UserControllerRequest;
 
 import io.javalin.http.Context;
@@ -24,11 +25,13 @@ public class UserController {
         context.result("GET /user");
     }
 
+    // this method is called when the user sends a POST request to api/users
     public static void createUser(Context context) {
         logger.info("Creating User");
 
         UserControllerRequest userControllerRequest;
         try {
+
             userControllerRequest = context.bodyAsClass(UserControllerRequest.class);
             System.out.println(userControllerRequest.toString());
         } catch (Exception e) {
@@ -51,11 +54,8 @@ public class UserController {
             logger.info(e.getMessage());
             context.status(400);
 
-            Gson gson = new Gson();
-            HashMap<String, String> responseHashMap = new HashMap<>();
-            responseHashMap.put("message", e.getMessage());
-            context.result(
-                    gson.toJson(responseHashMap));
+            ResponseUtils.createResponse(e.getMessage(), context);
+
             return;
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,6 +67,50 @@ public class UserController {
 
         // Create the user and handle the response
         createUserWithResponse(context, userControllerRequest);
+    }
+
+    public static void searchUser(Context context) {
+        System.out.println("GET /users/search");
+
+        String username = context.queryParam("username");
+        System.out.println(username);
+        if (username == null || username.isEmpty() || username.equals("")) {
+            ResponseUtils.createResponse("Invalid username", context, 400);
+            return;
+        }
+        User user = null;
+        try {
+            user = getUserInfo(username);
+            if (user == null) {
+                HashMap<String, String> responseHashMap = new HashMap<>();
+                responseHashMap.put("message", "User not found");
+                ResponseUtils.createResponse(responseHashMap, context, 200);
+                return;
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            ResponseUtils.createResponse(e.getMessage(), context, 400);
+            return;
+        }
+        HashMap<String, String> responseHashMap = new HashMap<>();
+        responseHashMap.put("username", user.getUsername());
+        responseHashMap.put("firstName", user.getFirstname());
+        responseHashMap.put("lastName", user.getLastname());
+
+        ResponseUtils.createResponse(responseHashMap, context, 200);
+    }
+
+    private static User getUserInfo(String username) throws RuntimeException {
+        try (Session session = HibernateUtil.getSessionFactoryInstance().openSession()) {
+            User user = (User) session.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+                    .setParameter("username", username)
+                    .uniqueResult();
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            System.out.println(user.toString());
+            return user;
+        }
     }
 
     private static void createUserWithResponse(Context context, UserControllerRequest userControllerRequest) {
@@ -83,7 +127,12 @@ public class UserController {
             context.result("Username already exists");
         } else {
             String resultString = createUser(user);
-            context.status(200);
+            // check if the user was created successfully
+            if (resultString.equals("Failed to create user")) {
+                context.status(com.javaserver.utils.StatusCode.INTERNAL_SERVER_ERROR);
+            } else {
+                context.status(com.javaserver.utils.StatusCode.CREATED);
+            }
             Gson gson = new Gson();
             HashMap<String, String> responseHashMap = new HashMap<>();
             responseHashMap.put("message", resultString);
@@ -109,7 +158,7 @@ public class UserController {
 
     private static boolean isUsernameExists(String username) {
         try (Session session = HibernateUtil.getSessionFactoryInstance().openSession()) {
-            return (Long) session.createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username")
+            return (Long) session.createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username", Long.class)
                     .setParameter("username", username)
                     .uniqueResult() > 0;
         }
