@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.javaserver.routes.AuthRoutes;
+import com.javaserver.routes.MessageRoutes;
 import com.javaserver.routes.UserRoutes;
 import com.javaserver.utils.Sessions;
 
@@ -16,12 +17,30 @@ public class Main {
             config.jsonMapper(new JavalinJackson());
             config.jetty.sessionHandler(() -> Sessions.fileSessionHandler());
             config.jsonMapper(new GsonJsonMapper());
+            config.plugins.enableDevLogging();
         });
         app.error(404, ctx -> {
-            ctx.result("Not found");
+            // print the error message
+            System.out.println(ctx);
+            // set the response status code
+            ctx.status(404);
+            // send the response body in JSON format
+            ctx.json("Not found");
+
+        });
+
+        app.exception(Exception.class, (e, ctx) -> {
+            // print the error message
+            System.out.println(e.getMessage());
+            // set the response status code
+            ctx.status(500);
+            // send the response body in JSON format
+            ctx.json("Internal server error");
+
         });
         UserRoutes.setupUserRoutes(app);
         AuthRoutes.setupAuthRoutes(app);
+        MessageRoutes.setupMessageRoutes(app);
 
         app.start(7000);
     }
@@ -40,19 +59,5 @@ public class Main {
             return gson.toJson(obj, type);
         }
 
-        // @Override
-        // public String toJson(Object obj) {
-        // return gson.toJson(obj);
-        // }
-
-        // @Override
-        // public <T> T fromJson(String json, Class<T> targetClass) {
-        // return gson.fromJson(json, targetClass);
-        // }
-
-        // @Override
-        // public <T> T fromJson(String json, TypeToken<T> targetType) {
-        // return gson.fromJson(json, targetType.getType());
-        // }
     }
 }

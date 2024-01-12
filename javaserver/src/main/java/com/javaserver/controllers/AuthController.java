@@ -5,7 +5,6 @@ import java.util.HashMap;
 import org.hibernate.Session;
 
 import com.google.gson.Gson;
-import com.javaserver.model.User;
 import com.javaserver.utils.HibernateUtil;
 import com.javaserver.utils.Sessions;
 import com.javaserver.utils.requests.LoginRequest;
@@ -16,42 +15,66 @@ public class AuthController {
 
     public static void login(Context context) {
         System.out.println("POST /api/login");
-        LoginRequest loginRequest = context.bodyAsClass(LoginRequest.class);
-        System.out.println(loginRequest.toString());
-        if (isUsernameExists(loginRequest.getUsername())) {
-            if (!isPasswordCorrect(loginRequest.getUsername(), loginRequest.getPassword())) {
-                context.status(401);
-                Gson gson = new Gson();
-                HashMap<String, String> responseHashMap = new HashMap<>();
-                responseHashMap.put("message", "Invalid username or password");
-                context.result(
-                        gson.toJson(responseHashMap));
 
-            } else {
-                handleSuccessfulLogin(context, loginRequest.getUsername());
-            }
+        if (context.body().isEmpty() || context.bodyAsClass(LoginRequest.class) == null) {
+            sendBadRequestResponse(context, "Invalid request body, the body is empty or malformed");
+            return;
+        }
+
+        LoginRequest loginRequest = context.bodyAsClass(LoginRequest.class);
+        if (loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
+            sendBadRequestResponse(context, "Invalid request body, username or password is missing");
+            return;
+        }
+
+        System.out.println(loginRequest.toString());
+
+        if (isCredentialsValid(loginRequest.getUsername(), loginRequest.getPassword())) {
+            handleSuccessfulLogin(context, loginRequest.getUsername());
         } else {
-            context.status(401);
+            sendUnauthorizedResponse(context, "Invalid username or password");
+        }
+    }
+
+    public static void getIdentity(Context context) {
+        System.out.println("POST /api/identity");
+        String sessionId = context.cookie("SessionId");
+        System.out.println("SessionId: " + sessionId);
+
+        if (sessionId == null) {
+            System.out.println("session is not found");
+            sendBadRequestResponse(context, "SessionId cookie not found");
+            return;
+        }
+
+        String username = context.sessionAttribute(sessionId);
+        System.out.println("username: " + username);
+        if (username != null) {
+            // context.cookie("SessionId", sessionId);
+            context.status(200);
+            // send the response in the form of JSON
             Gson gson = new Gson();
             HashMap<String, String> responseHashMap = new HashMap<>();
-            responseHashMap.put("message", "Invalid username or password");
-            context.result(
-                    gson.toJson(responseHashMap));
+            responseHashMap.put("username", username);
+            context.result(gson.toJson(responseHashMap));
+
+        } else {
+            sendUnauthorizedResponse(context, "Unauthorized");
         }
     }
 
-    private static boolean isUsernameExists(String username) {
-        try (Session session = HibernateUtil.getSessionFactoryInstance().openSession()) {
-            return (Long) session.createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username")
-                    .setParameter("username", username)
-                    .uniqueResult() > 0;
-        }
+    public static void logout(Context context) {
+        context.status(200);
+        // TODO: delete session
+        sendSuccessResponse(context, "Logout successful");
     }
 
-    private static boolean isPasswordCorrect(String username, String password) {
+    private static boolean isCredentialsValid(String username, String password) {
         try (Session session = HibernateUtil.getSessionFactoryInstance().openSession()) {
+            // these comments are just for the staruml to work with generating the class
             return (Long) session
-                    .createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username AND u.password = :password")
+                    .createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username AND u.password = :password",
+                            Long.class)
                     .setParameter("username", username)
                     .setParameter("password", password)
                     .uniqueResult() > 0;
@@ -63,51 +86,29 @@ public class AuthController {
         context.sessionAttribute(sessionId, username);
         context.cookie("SessionId", sessionId);
         context.status(200);
-        Gson gson = new Gson();
-        HashMap<String, String> responseHashMap = new HashMap<>();
-        responseHashMap.put("message", "Login successful");
-        context.result(
-                gson.toJson(responseHashMap));
-
+        sendSuccessResponse(context, "Login successful");
     }
 
-    public static void getIdentity(Context context) {
-        String sessionId = context.cookie("SessionId");
-        if (sessionId == null) {
-            context.status(400);
-            Gson gson = new Gson();
-            HashMap<String, String> responseHashMap = new HashMap<>();
-            responseHashMap.put("message", "SessionId cookie not found");
-            context.result(
-                    gson.toJson(responseHashMap));
-
-            return;
-        }
-
-        String username = context.sessionAttribute(sessionId);
-        if (username != null) {
-            context.cookie("SessionId", sessionId);
-            context.status(200);
-            context.result(username);
-        } else {
-            context.status(401);
-            Gson gson = new Gson();
-            HashMap<String, String> responseHashMap = new HashMap<>();
-            responseHashMap.put("message", "Unauthorized");
-            context.result(
-                    gson.toJson(responseHashMap));
-
-        }
-    }
-
-    public static void logout(Context context) {
-        context.status(200);
-        // TODO: delete session
+    private static void sendBadRequestResponse(Context context, String message) {
+        context.status(400);
         Gson gson = new Gson();
         HashMap<String, String> responseHashMap = new HashMap<>();
-        responseHashMap.put("message", "Logout successful");
-        context.result(
-                gson.toJson(responseHashMap));
+        responseHashMap.put("message", message);
+        context.result(gson.toJson(responseHashMap));
+    }
 
+    private static void sendUnauthorizedResponse(Context context, String message) {
+        context.status(401);
+        Gson gson = new Gson();
+        HashMap<String, String> responseHashMap = new HashMap<>();
+        responseHashMap.put("message", message);
+        context.result(gson.toJson(responseHashMap));
+    }
+
+    private static void sendSuccessResponse(Context context, String message) {
+        Gson gson = new Gson();
+        HashMap<String, String> responseHashMap = new HashMap<>();
+        responseHashMap.put("message", message);
+        context.result(gson.toJson(responseHashMap));
     }
 }

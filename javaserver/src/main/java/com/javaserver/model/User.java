@@ -1,11 +1,11 @@
 package com.javaserver.model;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+// import org.hibernate.Session;
+// import org.hibernate.SessionFactory;
+// import org.hibernate.Transaction;
+// import org.hibernate.query.Query;
 
-import com.javaserver.utils.HibernateUtil;
+// import com.javaserver.utils.HibernateUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -94,6 +94,12 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", firstname=" + firstname + ", lastname=" + lastname + ", username=" + username
+                + ", dateofbirth=" + dateofbirth + ", password=" + password + "]";
     }
 
     // public String createUser() {

@@ -70,6 +70,7 @@ public class LoginController {
             alertMessage.setText("Login successful");
 
             try {
+
                 // FXRouter.goTo("home");
                 // get the root from the event
                 Node node = (Node) event.getSource();
@@ -87,6 +88,7 @@ public class LoginController {
                 stage.setScene(new Scene(root));
                 // show the stage
                 stage.show();
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

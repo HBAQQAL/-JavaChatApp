@@ -14,6 +14,9 @@ public class App extends Application {
         FXRouter.when("signup", "signUpView/signup.fxml",
                 "signUpView/signup-styles.css");
         FXRouter.when("home", "homeView/home.fxml", "signUpView/signup-styles.css");
+
+        FXRouter.when("chat", "chatView/chat.fxml", "chatView/chat-styles.css");
+
         try {
             FXRouter.goTo("login");
         } catch (Exception e) {
