@@ -64,7 +64,7 @@ public class LoginController {
             alertMessage.setText("Login successful");
 
             try {
-                FXRouter.goTo("home");
+                FXRouter.goTo("chat");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
