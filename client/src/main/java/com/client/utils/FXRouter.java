@@ -2,12 +2,9 @@ package com.client.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.AbstractMap;
 import java.util.HashMap;
 
-import com.client.App;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
