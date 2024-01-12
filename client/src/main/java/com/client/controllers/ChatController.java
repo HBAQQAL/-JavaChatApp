@@ -1,5 +1,5 @@
-package com.client.controllers;
 
+package com.client.controllers;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -7,13 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-
 import com.client.helpers.ContactManager;
 import com.client.model.Contact;
 import com.client.model.Message;
 import com.client.utils.ApiClient;
 import com.client.helpers.ChatManager;
-
 import com.client.utils.CreateMessages;
 import javafx.animation.FadeTransition;
 import javafx.collections.ListChangeListener;
@@ -37,7 +35,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-
 public class ChatController implements Initializable {
 
     @FXML
