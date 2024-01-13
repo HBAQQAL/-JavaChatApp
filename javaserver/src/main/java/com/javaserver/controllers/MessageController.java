@@ -88,6 +88,7 @@ public class MessageController {
 				messageHashMap.put("receiver", message.getReceiver().getUsername());
 				messageHashMap.put("content", message.getContent());
 				messageHashMap.put("date", message.getDate());
+				messageHashMap.put("type", message.getType());
 				messageArrayList.add(messageHashMap);
 			});
 
@@ -148,6 +149,7 @@ public class MessageController {
 			messageEntity.setReceiver(receiverEntity);
 			messageEntity.setContent(message.getContent());
 			messageEntity.setDate(message.getDateandtime());
+			messageEntity.setType(message.getType());
 
 			session.persist(messageEntity);
 			transaction.commit();

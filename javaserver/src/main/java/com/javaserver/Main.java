@@ -3,6 +3,7 @@ package com.javaserver;
 import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
+import com.javaserver.Sockets.Server;
 import com.javaserver.routes.AuthRoutes;
 import com.javaserver.routes.MessageRoutes;
 import com.javaserver.routes.UserRoutes;
@@ -41,8 +42,9 @@ public class Main {
         UserRoutes.setupUserRoutes(app);
         AuthRoutes.setupAuthRoutes(app);
         MessageRoutes.setupMessageRoutes(app);
-
+        new Server(7001);
         app.start(7000);
+
     }
 
     static class GsonJsonMapper implements io.javalin.json.JsonMapper {

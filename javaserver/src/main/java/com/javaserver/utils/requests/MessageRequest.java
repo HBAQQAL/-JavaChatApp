@@ -4,11 +4,14 @@ public class MessageRequest {
     private String content;
     private String receiver;
     private String dateandtime;
+    private String type;
 
-    public MessageRequest(String content, String receiver, String dateandtime) {
+    public MessageRequest(String content, String receiver, String dateandtime, String type) {
         this.content = content;
         this.receiver = receiver;
         this.dateandtime = dateandtime;
+        this.type = type;
+
     }
 
     public String getContent() {
@@ -33,6 +36,14 @@ public class MessageRequest {
 
     public void setDateandtime(String dateandtime) {
         this.dateandtime = dateandtime;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

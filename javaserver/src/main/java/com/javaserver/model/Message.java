@@ -31,6 +31,12 @@ public class Message {
 	@Column(name = "date")
 	private String date;
 
+	@Column(name = "type")
+	private String type;
+
+	public Message() {
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -75,10 +81,18 @@ public class Message {
 		this.date = date;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
 		return "Message [id=" + id + ", sender=" + sender + ", receiver=" + receiver + ", content=" + content
-				+ ", date=" + date + "]";
+				+ ", date=" + date + ", type=" + type + "]";
 	}
 
 }
