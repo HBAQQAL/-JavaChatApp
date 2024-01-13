@@ -34,6 +34,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -74,6 +76,8 @@ public class ChatController implements Initializable {
     private String fileName;
     @FXML
     private Button SEND_BTN;
+    @FXML
+    private Label selectedContact;
 
     CreateMessages SR = new CreateMessages();
     File file;
@@ -84,7 +88,7 @@ public class ChatController implements Initializable {
     public ChatManager chatManager = ChatManager.getInstance();
 
     @FXML
-    public void searchUser(MouseEvent e) {
+    public void searchUser() {
         if (!SEARCH_TXT.getText().equals("")) {
             String searchPrompt = SEARCH_TXT.getText();
             boolean found = false;
@@ -195,6 +199,13 @@ public class ChatController implements Initializable {
 
     }
 
+    @FXML
+    public void handleKeyPressed(KeyEvent e) {
+        if (e.getCode() == KeyCode.ENTER) {
+            sendMessage();
+        }
+    }
+
     // TODO : change phone number to username
     private HBox createContact(String contactNameString, String usernameString) {
 
@@ -254,6 +265,8 @@ public class ChatController implements Initializable {
         MSGS_CONTAINER.getChildren().clear();
         // load messages into the container
         loadMessagesIntoContainer();
+        // set the selected contact label
+        selectedContact.setText(usernameLabel.getText());
 
     }
 
@@ -341,7 +354,7 @@ public class ChatController implements Initializable {
     // }
 
     @FXML
-    public void sendMessage(ActionEvent e) {
+    public void sendMessage() {
         if (!contactManager.hasSelectedContact()) {
             System.out.println("No selected contact");
             return;

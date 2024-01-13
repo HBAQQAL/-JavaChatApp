@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.HashMap;
 
+import com.client.controllers.ChatController;
+
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -47,6 +49,7 @@ public final class FXRouter {
     private static AbstractMap<String, RouteScene> routes = new HashMap<>();
     // FXRouter current route
     private static RouteScene currentRoute;
+    private static ChatController chatController;
 
     /**
      * FXRouter Inner Class used into routes map
@@ -196,7 +199,7 @@ public final class FXRouter {
     public static void goTo(String routeLabel) throws IOException {
         // get corresponding route
         RouteScene route = routes.get(routeLabel);
-        loadNewRoute(route);
+        loadNewRoute(route, routeLabel);
     }
 
     /**
@@ -211,7 +214,7 @@ public final class FXRouter {
         RouteScene route = routes.get(routeLabel);
         // set route data
         route.data = data;
-        loadNewRoute(route);
+        loadNewRoute(route, routeLabel);
     }
 
     /**
@@ -219,7 +222,7 @@ public final class FXRouter {
      *
      * @throws Exception: throw FXMLLoader exception if file is not loaded correctly
      */
-    private static void loadNewRoute(RouteScene route) throws IOException {
+    private static void loadNewRoute(RouteScene route, String routeLabel) throws IOException {
         // set FXRouter current route reference
         currentRoute = route;
 
@@ -231,10 +234,14 @@ public final class FXRouter {
 
         Parent resource = null;
         try {
-            resource = FXMLLoader.load(fxmlFile.toURI().toURL());
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlFile.toURI().toURL());
+            resource = fxmlLoader.load();
+            if (routeLabel.equals("chat")) {
+                chatController = fxmlLoader.getController();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("there was an exception ");
+            System.out.println("There was an exception.");
         }
 
         window.setTitle(route.windowTitle);
@@ -301,6 +308,17 @@ public final class FXRouter {
      */
     public static Object getData() {
         return currentRoute.data;
+    }
+
+    public void setChatController(ChatController chatController) {
+        this.chatController = chatController;
+    }
+
+    public static ChatController getController(String routeLabel) {
+        if (routeLabel.equals("chat")) {
+            return chatController;
+        }
+        return null;
     }
 
 }

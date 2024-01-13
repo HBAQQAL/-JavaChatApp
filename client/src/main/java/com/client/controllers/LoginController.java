@@ -71,23 +71,24 @@ public class LoginController {
 
             try {
 
-                // FXRouter.goTo("home");
-                // get the root from the event
-                Node node = (Node) event.getSource();
-                // get the stage from the root
-                Stage stage = (Stage) node.getScene().getWindow();
-                // create a new FXMLLoader
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/chatView/chat.fxml"));
-                // load the FXML file
-                Parent root = loader.load();
-                // get the controller
-                ChatController controller = loader.getController();
-                // // use the controller...
-                new Client("localhost", "7001", usernameField.getText(), controller);
-                // set the scene to the stage
-                stage.setScene(new Scene(root));
-                // show the stage
-                stage.show();
+                FXRouter.goTo("chat");
+                // // get the root from the event
+                // Node node = (Node) event.getSource();
+                // // get the stage from the root
+                // Stage stage = (Stage) node.getScene().getWindow();
+                // // create a new FXMLLoader
+                // FXMLLoader loader = new
+                // FXMLLoader(getClass().getResource("/chatView/chat.fxml"));
+                // // load the FXML file
+                // Parent root = loader.load();
+                // // get the controller
+                // ChatController controller = loader.getController();
+                // // // use the controller...
+                new Client("localhost", "7001", usernameField.getText(), FXRouter.getController("chat"));
+                // // set the scene to the stage
+                // stage.setScene(new Scene(root));
+                // // show the stage
+                // stage.show();
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
