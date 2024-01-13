@@ -21,9 +21,9 @@
                 Log In
             </Text>
             <TextField fx:id="usernameField" promptText="Username" maxWidth="350" minWidth="300"
-                text="username" />
+                text="hamza" />
             <PasswordField fx:id="passwordField" promptText="Password" maxWidth="350" minWidth="300"
-                text="password" />
+                text="hamzabaqqal" />
             <Button fx:id="singinButton" text="Log In" onAction="#login" />
             <Text fx:id="alertMessage"></Text>
             <BorderPane>

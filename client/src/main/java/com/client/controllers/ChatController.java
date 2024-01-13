@@ -1,6 +1,8 @@
 
 package com.client.controllers;
+
 import java.io.File;
+import java.net.Socket;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,12 +15,17 @@ import com.client.model.Message;
 import com.client.utils.ApiClient;
 import com.client.helpers.ChatManager;
 import com.client.utils.CreateMessages;
+
+import Socket.Client;
+import Socket.SocketMessage;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -34,7 +41,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+
 public class ChatController implements Initializable {
 
     @FXML
@@ -59,12 +70,18 @@ public class ChatController implements Initializable {
     private TextField SEARCH_TXT;
     @FXML
     private ImageView SEARCH_ICON;
+    private boolean isFile = false;
+    private String fileName;
+    @FXML
+    private Button SEND_BTN;
 
     CreateMessages SR = new CreateMessages();
     File file;
+    String sfile;
+    File selectedFile = null;
     // Image UserImage;
-    ContactManager contactManager = ContactManager.getInstance();
-    ChatManager chatManager = ChatManager.getInstance();
+    public ContactManager contactManager = ContactManager.getInstance();
+    public ChatManager chatManager = ChatManager.getInstance();
 
     @FXML
     public void searchUser(MouseEvent e) {
@@ -123,6 +140,18 @@ public class ChatController implements Initializable {
         } else {
             System.out.println("Response is null");
         }
+    }
+
+    public void updateContacts() {
+
+        Platform.runLater(() -> {
+            clearContacts();
+            contactManager.getContacts().forEach((contact) -> {
+                HBox contactHbox = createContact(contact.getNames(), contact.getUsername());
+
+                addContactToMainContacts(contactHbox);
+            });
+        });
     }
 
     @FXML
@@ -221,6 +250,9 @@ public class ChatController implements Initializable {
         Label usernameLabel = ((Label) ((VBox) contact.getChildren().get(1)).getChildren().get(2));
 
         contactManager.setSelectedContact(usernameLabel.getText());
+        // remove all messages from the container
+        MSGS_CONTAINER.getChildren().clear();
+        // load messages into the container
         loadMessagesIntoContainer();
 
     }
@@ -314,6 +346,8 @@ public class ChatController implements Initializable {
             System.out.println("No selected contact");
             return;
         }
+
+        // api message envoi :
         if (!MSG_TXT.getText().equals("")) {
 
             Message message = new Message(MSG_TXT.getText(), "me", contactManager.getSelectedContact().getUsername(),
@@ -323,6 +357,28 @@ public class ChatController implements Initializable {
                     (event) -> {
                         System.out.println("1. Clecked :D");
                     });
+
+        }
+        // socket message envoi :
+        if (isFile) {
+            // Message m = new Message(this.fileName, "test",
+            // contactManager.getSelectedContact().getUsername(), "file");
+            // create a new message using the message class in the package Socket
+            SocketMessage m = new SocketMessage(this.fileName, "test",
+                    contactManager.getSelectedContact().getUsername(), "file");
+            System.out.println(m.getReceiver());
+            System.out.println("file name is " + this.fileName);
+            Client.sendMessage(m);
+            Client.sendFile(this.sfile);
+            isFile = false;
+            return;
+        }
+        if (!MSG_TXT.getText().equals("")) {
+            System.out.println("sending message");
+            SocketMessage mm = new SocketMessage(MSG_TXT.getText(), "test",
+                    contactManager.getSelectedContact().getUsername(), "message");
+            Client.sendMessage(mm);
+            MSG_TXT.clear();
 
         }
         MSG_TXT.clear();
@@ -337,6 +393,19 @@ public class ChatController implements Initializable {
                     });
         }
         MSG_TXT.clear();
+    }
+
+    public void showMessage(String message) {
+        System.out.println("showing message");
+        Platform.runLater(() -> {
+            // create a new button for each contact
+            // Label msg = new Label(message);
+            // add the button to the vbox
+            // MSGS_CONTAINER.getChildren().add(msg);
+            SR.receiveMessage(message, new SimpleDateFormat("hh:mm a").format(new Date()), MSGS_CONTAINER, null);
+            System.out.println(message);
+        });
+
     }
 
     @Override
@@ -378,6 +447,27 @@ public class ChatController implements Initializable {
 
     void setTempInfo() {
 
+    }
+
+    public void selectFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select File");
+        fileChooser.getExtensionFilters().addAll(
+                new ExtensionFilter("All Files", "*.*"));
+
+        Stage stage = (Stage) SEND_BTN.getScene().getWindow();
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            // File selected, do something with it
+            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+            this.sfile = selectedFile.getAbsolutePath();
+            this.isFile = true;
+            this.fileName = selectedFile.getName();
+            // set the text of the label to the name of the file
+            MSG_TXT.setText(sfile);
+
+        }
     }
 
 }
