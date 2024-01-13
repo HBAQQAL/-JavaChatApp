@@ -6,6 +6,7 @@ module com.client {
 
     opens com.client to javafx.fxml;
     opens com.client.controllers to javafx.fxml;
+    opens Socket to com.google.gson;
 
     exports com.client;
 }

@@ -1,17 +1,21 @@
 package com.javaserver.utils.requests;
 
+import java.util.UUID;
+
 public class UserControllerRequest {
     private String firstName;
     private String lastName;
     private String username;
     private String password;
     private String dateOfBirth;
+    private int id;
 
     public UserControllerRequest() {
     }
 
     public UserControllerRequest(String firstName, String lastName, String username, String password,
             String dateOfBirth) {
+        this.id = UUID.randomUUID().hashCode();
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

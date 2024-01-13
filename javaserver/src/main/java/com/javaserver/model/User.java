@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
@@ -41,6 +41,15 @@ public class User {
     }
 
     public User(String firstname, String lastname, String username, String dateofbirth, String password) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.username = username;
+        this.dateofbirth = dateofbirth;
+        this.password = password;
+    }
+
+    public User(int id, String firstname, String lastname, String username, String dateofbirth, String password) {
+        this.id = (long) id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.username = username;

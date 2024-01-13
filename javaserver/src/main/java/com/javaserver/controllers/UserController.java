@@ -1,6 +1,7 @@
 package com.javaserver.controllers;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 // import org.eclipse.jetty.websocket.api.StatusCode;
 import org.hibernate.Session;
@@ -71,6 +72,7 @@ public class UserController {
 
     private static void createUserWithResponse(Context context, UserControllerRequest userControllerRequest) {
         User user = new User(
+                UUID.randomUUID().hashCode(),
                 userControllerRequest.getFirstName(),
                 userControllerRequest.getLastName(),
                 userControllerRequest.getUsername(),

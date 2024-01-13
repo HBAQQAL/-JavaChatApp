@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.javaserver.routes.AuthRoutes;
 import com.javaserver.routes.UserRoutes;
 import com.javaserver.utils.Sessions;
+import Sockets.Server;
 
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
@@ -22,7 +23,7 @@ public class Main {
         });
         UserRoutes.setupUserRoutes(app);
         AuthRoutes.setupAuthRoutes(app);
-
+        new Server(7001);
         app.start(7000);
     }
 
