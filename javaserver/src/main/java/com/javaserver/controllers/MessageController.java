@@ -39,6 +39,66 @@ public class MessageController {
 
 	}
 
+	public static void getLastMessage(Context ctx) {
+		System.out.println("GET /api/lastmessage");
+		String username = getUserNameFromSession(ctx);
+		if (username == null) {
+			return;
+		}
+		String receiverUsername = ctx.queryParam("receiver");
+
+		long userId = 0;
+		long receiverId = 0;
+
+		try {
+			userId = getUserId(username);
+			receiverId = getUserId(receiverUsername);
+		} catch (RuntimeException e) {
+			// send a response to the client that the user is not found
+			ResponseUtils.createResponse("User not found", ctx, 400);
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+			ResponseUtils.createResponse("Internal server error", ctx, 500);
+			return;
+		}
+
+		if (receiverUsername == null) {
+			ResponseUtils.createResponse("Invalid user", ctx, 400);
+			return;
+		}
+
+		try (Session session = HibernateUtil.getSessionFactoryInstance().openSession()) {
+
+			Query<Message> query = session.createQuery("SELECT m " +
+					"FROM Message m " +
+					"WHERE (m.sender.id = :userId AND m.receiver.id = :receiverId) " +
+					"OR (m.sender.id = :receiverId AND m.receiver.id = :userId) " +
+					"ORDER BY m.id DESC", Message.class)
+					.setParameter("userId", userId)
+					.setParameter("receiverId", receiverId)
+					.setMaxResults(1);
+
+			Message message = (Message) query.uniqueResult();
+
+			HashMap<String, String> messageHashMap = new HashMap<>();
+			messageHashMap.put("sender", message.getSender().getUsername());
+			messageHashMap.put("receiver", message.getReceiver().getUsername());
+			messageHashMap.put("content", message.getContent());
+			messageHashMap.put("date", message.getDate());
+			messageHashMap.put("type", message.getType());
+
+			HashMap<String, Object> response = new HashMap<>();
+			response.put("message", messageHashMap);
+			ResponseUtils.createResponse(response, ctx, 200);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			ResponseUtils.createResponse("Internal server error", ctx, 500);
+		}
+
+	}
+
 	public static void getAllMessagesOfUser(Context ctx) {
 		// get all the messges from the database
 		System.out.println("GET /api/messages");
@@ -180,4 +240,5 @@ public class MessageController {
 			return user;
 		}
 	}
+
 }
