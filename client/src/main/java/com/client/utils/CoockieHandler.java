@@ -4,6 +4,7 @@ public class CoockieHandler {
     private static CoockieHandler instance;
     private String coockie;
     private String JSESSIONID;
+    private String userUsername;
 
     private CoockieHandler() {
         // Private constructor to prevent instantiation from outside the class
@@ -46,6 +47,14 @@ public class CoockieHandler {
 
     public void setCoockieFromHeader(String header) {
         this.coockie = header.split(";")[0];
+    }
+
+    public String getUserUsername() {
+        return userUsername;
+    }
+
+    public void setUserUsername(String userUsername) {
+        this.userUsername = userUsername;
     }
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.client.utils.ApiClient;
+import com.client.utils.CoockieHandler;
 import com.client.utils.FXRouter;
 
 import Socket.Client;
@@ -55,6 +56,9 @@ public class LoginController {
     }
 
     private String buildJsonInputString() {
+
+        CoockieHandler.getInstance().setUserUsername(usernameField.getText());
+
         return String.format("{\"username\":\"%s\",\"password\":\"%s\"}", usernameField.getText(),
                 passwordField.getText());
     }
