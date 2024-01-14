@@ -13,6 +13,7 @@ import com.client.helpers.ContactManager;
 import com.client.model.Contact;
 import com.client.model.Message;
 import com.client.utils.ApiClient;
+import com.client.utils.CoockieHandler;
 import com.client.helpers.ChatManager;
 import com.client.utils.CreateMessages;
 
@@ -209,13 +210,22 @@ public class ChatController implements Initializable {
     // TODO : change phone number to username
     private HBox createContact(String contactNameString, String usernameString) {
 
-        Label time = new Label(new SimpleDateFormat("hh:mm a").format(new Date()));
-        HBox topBar = new HBox(time);
-        topBar.setStyle("-fx-background-color: #f0f0f0;"); // Example background color
+        // Label time = new Label(new SimpleDateFormat("hh:mm a").format(new Date()));
+        // HBox topBar = new HBox(time);
+        // topBar.setStyle("-fx-background-color: #f0f0f0;"); // Example background
+        // color
+        if (!usernameString.equals(CoockieHandler.getInstance().getUserUsername())) {
+            chatManager.getLastMessage(usernameString);
+        }
 
         Label contactName = new Label(contactNameString);
+        contactName.getStyleClass().add("contact-name");
+
         Label username = new Label(usernameString);
-        VBox contactItem = new VBox(topBar, contactName, username);
+
+        Label lastMessage = new Label(chatManager.getLastMessage(usernameString));
+
+        VBox contactItem = new VBox(contactName, username, lastMessage);
         contactItem.setStyle("-fx-padding: 10; -fx-spacing: 5;"); // Example padding and spacing
 
         Circle userImageCircle = new Circle(25, 25, 25);
@@ -258,7 +268,7 @@ public class ChatController implements Initializable {
     }
 
     private void handleContactClick(HBox contact) {
-        Label usernameLabel = ((Label) ((VBox) contact.getChildren().get(1)).getChildren().get(2));
+        Label usernameLabel = ((Label) ((VBox) contact.getChildren().get(1)).getChildren().get(1));
 
         contactManager.setSelectedContact(usernameLabel.getText());
         // remove all messages from the container
@@ -283,6 +293,10 @@ public class ChatController implements Initializable {
                     System.out.println("1. Clecked :D");
                 });
             }
+        });
+
+        MSGS_CONTAINER.heightProperty().addListener(e -> {
+            SCROLL_BAR.setVvalue(1.0);
         });
     }
 
@@ -315,43 +329,6 @@ public class ChatController implements Initializable {
         contactItem.getStyleClass().add("contact-item");
         return contactItem;
     }
-
-    // @FXML
-    // public void chooseImage(MouseEvent e) {
-    // Stage stage = (Stage) IMAGE_NAME_LBL.getScene().getWindow();
-    // FileChooser fileChooser = new FileChooser();
-    // fileChooser.getExtensionFilters()
-    // .add(new FileChooser.ExtensionFilter("Image Files (*.jpg, *.jpeg, *.png)",
-    // "*.jpg", "*.jpeg", "*.png"));
-    // file = fileChooser.showOpenDialog(stage);
-
-    // if (file != null) {
-    // try {
-    // // BufferedImage bufferedImage = ImageIO.read(file);
-    // // UserImage = SwingFXUtils.toFXImage(bufferedImage, null);
-
-    // // Circle circleImage = new Circle(30, 30, 30);
-    // // circleImage.setFill(new ImagePattern(UserImage));
-    // // circleImage.setSmooth(true);
-
-    // // IMAGE_NAME_LBL.setText(file.getName());
-    // // IMAGE_CONTAINER.getChildren().remove(0);
-    // // IMAGE_CONTAINER.getChildren().add(circleImage);
-    // UserImage = new Image(new FileInputStream(file));
-
-    // Circle circleImage = new Circle(30, 30, 30);
-    // circleImage.setFill(new ImagePattern(UserImage));
-    // circleImage.setSmooth(true);
-
-    // IMAGE_NAME_LBL.setText(file.getName());
-    // IMAGE_CONTAINER.getChildren().remove(0);
-    // IMAGE_CONTAINER.getChildren().add(circleImage);
-    // } catch (IOException ex) {
-    // ex.printStackTrace();
-    // }
-    // }
-
-    // }
 
     @FXML
     public void sendMessage() {
@@ -417,6 +394,9 @@ public class ChatController implements Initializable {
             // MSGS_CONTAINER.getChildren().add(msg);
             SR.receiveMessage(message, new SimpleDateFormat("hh:mm a").format(new Date()), MSGS_CONTAINER, null);
             System.out.println(message);
+        });
+        MSGS_CONTAINER.heightProperty().addListener(e -> {
+            SCROLL_BAR.setVvalue(1.0);
         });
 
     }

@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import com.client.model.Message;
 import com.client.utils.ApiClient;
+import com.client.utils.CoockieHandler;
 import com.client.utils.CreateMessages;
+import java.util.LinkedHashMap;
 
 public class ChatManager {
     public static ChatManager instance = null;
@@ -59,6 +61,29 @@ public class ChatManager {
 
     public ArrayList<Message> getMessages() {
         return this.messages;
+    }
+
+    public String getLastMessage(String receiver) {
+        HashMap<String, String> queryParams = new HashMap<>();
+        queryParams.put("receiver", receiver);
+
+        Map<String, Object> response = ApiClient.makeHttpRequest("http://localhost:7000/api/message/lastmessage", "GET",
+                queryParams);
+
+        if (response.get("status").equals("error")) {
+            return "No messages yet";
+        }
+
+        Map<String, String> message = (Map<String, String>) response.get("message");
+
+        String sender = message.get("sender");
+        String content = message.get("content");
+
+        if (sender.equals(CoockieHandler.getInstance().getUserUsername())) {
+            return "You: " + content;
+        } else {
+            return sender + ": " + content;
+        }
     }
 
 }
