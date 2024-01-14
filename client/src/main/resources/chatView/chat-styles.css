@@ -293,3 +293,9 @@
 #OPTIONS_BTN:pressed {
   -fx-background-color: #e7e7e770;
 }
+
+.contact-name {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #020202;
+}
